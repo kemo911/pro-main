@@ -1,0 +1,110 @@
+a {
+    color: #e74c3c;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #ff5e5e;
+    text-decoration: none;
+}
+
+p {color: #000;}
+.navbar-default .navbar-nav>li>a {
+    color: #ffffff;
+}
+
+.navbar-default .navbar-nav>li> a:hover {
+    color: #e74c3c;
+}
+
+
+.pagination>.disabled>span, .pagination>.disabled>span:hover, .pagination>.disabled>span:focus, .pagination>.disabled>a, .pagination>.disabled>a:hover, .pagination>.disabled>a:focus {
+    color: #fff;
+    background-color: #e74c3c;
+    border-color: transparent;
+    cursor: not-allowed;
+}
+
+.pagination>.active>a, .pagination>.active>span, .pagination>.active>a:hover, .pagination>.active>span:hover, .pagination>.active>a:focus, .pagination>.active>span:focus {
+    z-index: 3;
+    color: #ffffff;
+    background-color: #000;
+    border-color: transparent;
+    cursor: default;
+}
+
+.panel-primary>.panel-heading {
+    color: #ffffff;
+    background-color: #000;
+    border-color: #000;
+}
+
+.btn-info {
+    color: #ffffff;
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-primary {
+    color: #ffffff;
+    background-color: #050505;
+    border-color: #050505;
+}
+
+.panel-info>.panel-heading {
+    color: #ffffff;
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-blue {
+    color: #ffffff;
+    background-color: #3498db;
+    border-color: #3498db;
+}
+.btn-red {
+    color: #ffffff;
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+.btn-success {
+    color: #ffffff;
+    background-color: #e74c3c;
+    border-color: #e74c3c;
+}
+.btn-success:hover {
+    color: #ffffff;
+    background-color: #000;
+    border-color: #000;
+}
+.btn-success:active, .btn-success.active, .open>.dropdown-toggle.btn-success {
+    color: #ffffff;
+    background-color: #000;
+    border-color: #000;
+}
+
+.btn-info:hover {
+    color: #ffffff;
+    background-color: #000;
+    border-color: #000;
+}
+
+.table>thead>tr>td.info, .table>tbody>tr>td.info, .table>tfoot>tr>td.info, .table>thead>tr>th.info, .table>tbody>tr>th.info, .table>tfoot>tr>th.info, .table>thead>tr.info>td, .table>tbody>tr.info>td, .table>tfoot>tr.info>td, .table>thead>tr.info>th, .table>tbody>tr.info>th, .table>tfoot>tr.info>th {
+    background-color: #e74c3c;
+}
+
+.pagination>li>a, .pagination>li>span {
+    position: relative;
+    float: left;
+    padding: 10px 15px;
+    line-height: 1.42857143;
+    text-decoration: none;
+    color: #ffffff;
+    background-color: #e74c3c;
+    border: 1px solid transparent;
+    margin-left: -1px;
+}
+
+#dotModalPartSection input:disabled {
+    background-color: #a9a1a1;
+}

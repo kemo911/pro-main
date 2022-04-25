@@ -1,0 +1,304 @@
+.pad {
+    width: 220px;
+    border: 1px solid #494440;
+}
+.username{
+    font-size: 18px;
+    text-align: center;
+    padding-top: 50px;
+}
+.avant1{
+    border: 1px solid #494440;
+    padding: 25px 10px 0 10px;
+    position: relative;
+    margin-bottom: 10px;
+}
+.down-window{
+    width: 61px;
+    height:20px;
+    position: absolute;
+    top: -1px;
+    background: url('../img/down-window.jpg') no-repeat top center;
+}
+.avant2 textarea, .vitre textarea, .droit3 textarea, .gauche3 textarea{
+    border: 1px solid #494440;
+    border-radius: 0;
+}
+.vitre textarea.vitre_custcode2{
+    margin-left: -1px;
+}
+.avant3{
+    border: 1px solid #494440;
+    padding: 10px 10px 25px 10px;
+    margin-bottom: -1px;
+    position: relative;
+}
+.up-window{
+    width: 61px;
+    height:20px;
+    position: absolute;
+    bottom: -1px;
+    background: url('../img/up-window.jpg') no-repeat top center;
+}
+.avant .up-window, .avant .down-window{
+    left: 25px;
+}
+.vitre .up-window, .vitre .down-window{
+    right: 25px;
+}
+.vitre-custcode1{
+    border: 1px solid #494440;
+    padding: 15px 0px 0 0px;
+    margin-bottom: 10px;
+    position: relative;
+}
+.vitre-custcode2{
+    border: 1px solid #494440;
+    padding: 10px 10px 15px 10px;
+    margin: 10px 0;
+    position: relative;
+}
+.droit1{
+    width: 40%;
+    float: left;
+    border: 1px solid #494440;
+    padding-bottom: 5px;
+}
+.droit1 .form-group{
+    padding: 5px;
+    margin-bottom: 0;
+}
+.droit1 .form-inline{
+    border-top: 1px solid #494440;
+    padding-left: 1px;
+    padding-top: 5px;
+    line-height: 1;
+}
+
+.droit2{
+    width: 40%;
+    float: left;
+    border: 1px solid #494440;
+    border-left: 0;
+    line-height: 1;
+    padding-bottom: 5px;
+}
+
+.droit2 .form-group{
+    padding: 5px;
+    margin-bottom: 0;
+}
+.droit2 .form-inline{
+    border-top: 1px solid #494440;
+    padding-left: 0px;
+    padding-top: 5px;
+}
+.droit3{
+    width: 20%;
+    float: left;
+}
+.droit3 .form-group{
+    padding-left: 5px;
+    margin-bottom: 0;
+}
+.rightside-input input[type="text"]{
+    border: 0px solid;
+    padding: 0;
+}
+.rightside-input label{
+    font-size: 10px;
+}
+.longeron-droit{
+    border: 1px solid #494440;
+    padding: 0 10px;
+    margin: 5px 0;
+}
+/* webkit solution */
+::-webkit-input-placeholder {
+    text-align:right;
+}
+/* mozilla solution */
+input:-moz-placeholder {
+    text-align:right;
+}
+.moulure-de-toit-d{
+    border: 1px solid #494440;
+    position: relative;
+    text-align: right;
+}
+.moulure-de-toit-d .form-inline{
+    margin: 20px 10px;
+}
+.longeron-gauche{
+    border: 1px solid #494440;
+    padding: 0 10px;
+    margin: 5px 0;
+}
+.gauche-vitre1{
+    padding-top: 5px;
+    width: 40%;
+    float: left;
+    border: 1px solid #494440;
+    padding-right: 1px;
+    line-height: 1;
+}
+.gauche-vitre1 .form-inline{
+    padding-left: 2px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #494440;
+}
+.gauche-vitre1 .form-group{
+    padding: 5px;
+    margin-bottom: 0;
+}
+.gauche-vitre2{
+    width: 40%;
+    float: left;
+    border: 1px solid #494440;
+    border-left: 0px solid;
+    line-height: 1;
+    padding-top: 5px;
+}
+.gauche-vitre2 .form-inline{
+    padding-left: 1px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #494440;
+}
+.gauche-vitre2 .form-group{
+    padding: 5px;
+    margin-bottom: 0;
+}
+.gauche3{
+    width: 20%;
+    float: left;
+}
+.droit-passenger{
+    padding-top: 20px;
+}
+.moulure-de-toit-d .top-yellow-bg{
+    position: absolute;
+    top: 0;
+    height: 12px;
+    width: 100%;
+    background: url('../img/yellow-bg.jpg');
+}
+.moulure-de-toit-d .bottom-yellow-bg{
+    position: absolute;
+    bottom: 0;
+    height: 12px;
+    width: 100%;
+    background: url('../img/yellow-bg.jpg');
+}
+label[for="vitre_custcode1"]{
+    width: 42px;
+    height: 35px;
+    background: url('../img/vitre-up.jpg');
+    position: absolute;
+    bottom: -6px;
+}
+.vitre-custcode1 span{
+    margin-left: 45px;
+    white-space: nowrap;
+    font-size: 10px;
+}
+.vitre-custcode1 span.span1{
+    position: absolute;
+    bottom: 15px;
+}
+.vitre-custcode1 span.span2{
+    position: absolute;
+    bottom: 0;
+}
+
+label[for="vitre_custcode2"]{
+    width: 42px;
+    height: 33px;
+    background: url('../img/vitre-down.jpg');
+    position: absolute;
+    top:0;
+    left: 0;
+}
+.vitre-custcode2 span{
+    margin-left: 35px;
+    white-space: nowrap;
+    font-size: 10px;
+}
+.vitre-custcode2 span.span1{
+    position: absolute;
+    top: 0;
+}
+.vitre-custcode2 span.span2{
+    position: absolute;
+    top: 15px;
+}
+
+.checkbox-label{
+    cursor: pointer;
+}
+
+.custom-checkbox{
+    display: inline-block;
+    width: 20px;
+    height: 10px;
+    border: 1px solid #494440;
+    margin-left: 10px;
+}
+.rightside-input .checkbox label{
+    min-height: 12px;
+}
+
+.custom-checkbox.checked{
+    background: url('../img/check-tick-icon.png') no-repeat center;
+}
+.vitre-custcode1 span.custom-checkbox, .vitre-custcode2 span.custom-checkbox{
+    padding-left: 0;
+}
+.vitre-custcode1 .vitre-custcode1-check{
+    margin-left: 10px;
+    margin-top: 20px;
+}
+.vitre-custcode2 .vitre-custcode2-check{
+    margin-left: 10px;
+    margin-top: 5px;
+}
+.droit1 .custom-checkbox, .droit2 .custom-checkbox, .gauche-vitre1 .custom-checkbox{
+    margin-left: 1px;
+}
+
+.gauche-vitre2 .custom-checkbox{
+    margin-left: 0;
+}
+.rightside-input .panel-body{
+    padding-bottom: 0;
+}
+.rightside-input input[name="vitre_custcode_txt_1"]{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+@media screen and (max-width: 991px){
+    .avant{
+        margin-bottom: 40px;
+    }
+    .vitre{
+        margin-top: 10px;
+    }
+}
+
+.moulure-de-toit-d-text, .moulure-de-toit-g-text {
+    width: 94px;
+    display: inline-block;
+    border: 1px solid black !important;
+    height: 20px;
+    float: left;
+    margin: 4px 0 0 4px;
+    font-size: 12px;
+}
+.moulure-de-toit-g-text {
+    margin: 0;
+    margin-bottom: 4px;
+    margin-left: 4px;
+}
+
+#moldPrintPreviewModal .modal-dialog {
+    width: 900px;
+}

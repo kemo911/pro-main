@@ -1,0 +1,893 @@
+$(document).ready(function() {
+
+    var AJAX_URL = '/admin/ajax/ajax_action.php';
+    var invoiceObject = {};
+    var dotInfoHolder = {};
+    var damages = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,'stripping','other_fees','glazier','work_force','parts'];
+    var subs = ['tech','note','price'];
+    var otherInvoiceHolder = {
+        "stripping": {},
+        "other_fees": {},
+        "glazier": {},
+        "work_force": {},
+        "parts": {}
+    };
+
+    $('#client_lists_dt').DataTable( {
+        "processing": true,
+        "serverSide": true,
+        "ajax": "/admin/ajax/list_clients.php",
+        "pagingType": "numbers",
+        columns: [
+            { responsivePriority: 1 },
+            { responsivePriority: 2 },
+            { responsivePriority: 8 },
+            { responsivePriority: 4 },
+            { responsivePriority: 5 },
+            { responsivePriority: 6 },
+            { responsivePriority: 7 },
+            { responsivePriority: 3 },
+        ]
+    } );
+    $('#client_lists_dt_short').DataTable( {
+        "processing": true,
+        "serverSide": true,
+        "ajax": "/admin/ajax/list_clients_short.php"
+    } );
+    $('#user_lists_dt').DataTable();
+    $('#user_add_form').parsley({
+        successClass: "has-success",
+        errorClass: "has-error",
+        classHandler: function (el) {
+            return el.$element.closest(".form-group");
+        },
+        errorsContainer: function (el) {
+            return el.$element.closest(".form-group");
+        },
+        errorsWrapper: "<span class='help-block'></span>",
+        errorTemplate: "<span></span>"
+    });
+
+    if ( $('#clients').length ) {
+        $('#clients').select2();
+    }
+    
+    $('#client_search_token').keyup(function () {
+        var $self = $(this);
+
+        if ( $self.val().length > 2 ) {
+            var $post = $.post( AJAX_URL, {'action': 'list_client_by_search_token', 'token': $self.val() });
+            $post.done(function (response) {
+                $('#client-lists').find('.list-group').html(response);
+            });
+            $post.fail(function (response) {
+                $('#client-lists').find('.list-group').html(response.text);
+            });
+        }
+    });
+
+    $('#chooseClientModal').on('hidden.bs.modal', function () {
+        $('#client_search_token').val('');
+        $('#client-lists').find('.list-group').html('');
+    });
+
+    $(document).on('click', '#client-lists a.selectClient', function (event) {
+        event.preventDefault();
+
+        var $self = $(this);
+
+        $('#clientid').val($self.data('clientId'));
+        $('#client_fname').val($self.data('clientFname'));
+        $('#client_lname').val($self.data('clientLname'));
+        $('#client_email').val($self.data('clientEmail'));
+        $('#client_tel1').val($self.data('clientTel'));
+
+        $("#chooseClientModal").modal('toggle');
+    });
+
+    $('#date').datepicker();
+
+    $('#vehicles').find('a').on('click', function (e) {
+        e.preventDefault();
+    });
+
+    // Dropzone.autoDiscover = false;
+    // if ( $('#div#dropzone').length ) {
+    //     $("div#dropzone").dropzone({
+    //         paramName: 'file',
+    //         url: "/admin/ajax/ajax_file_upload.php",
+    //         acceptedFiles: 'image/*',
+    //         maxFilesize: 2,
+    //         dictDefaultMessage: "Drag your images",
+    //     });
+    // }
+
+    var response = {};
+    var pricing = 0;
+    var type = '';
+    $('.dot').click(function (e) {
+        var $current = $(this);
+        $('#dotPreviewModal').modal('toggle');
+        var number = $current.data('dotNumber');
+
+        if ( number == 1 || number == 2 || number == 4 ) {
+            $('#for_1_2_4').show();
+        } else {
+            $('#for_1_2_4').hide();
+        }
+
+        type = $current.data('dotType');
+        var pricing = 0;
+        var name = '';
+        $('#dot_number').val(number);
+        $.get('/admin/ajax/ajax_get_pricing.php?type='+type+'&number='+number, function (resp) {
+            response = resp;
+            $('#dot_name').html(resp.name);
+        },'json');
+
+        try {
+
+            if ( typeof dotInfoHolder[number] !== 'undefined' ) {
+                $('#dot_price').val(dotInfoHolder[number].price);
+                $('#dot_desc').val(dotInfoHolder[number].description);
+                $('#dot_number').val(number);
+                $('#dot_tech').val(dotInfoHolder[number].tech);
+            }
+
+        } catch (e) {}
+    });
+
+    $('#dotPreviewModal').on('hidden.bs.modal', function () {
+        response = {};
+        pricing = 0;
+        type = '';
+        $('input[name="dot[extra]"]').attr('checked', false);
+        $('input[name="dot[extra]"]').prop('checked', false);
+        $('input[name="dot[type]"]:checked').attr('checked', false);
+        $('input[name="dot[type]"]:checked').prop('checked', false);
+        $('#dot_pricing').val('');
+        $('#dot_price').val('');
+        $('#dot_desc').val('');
+        $('#dot_number').val('');
+        $('.dot-label').removeClass('active');
+        $('.dot-label-cb').removeClass('active');
+        generateInvoice();
+    });
+
+    $('.dot-label').click(function (e) {
+        var $self = $(this);
+        $('.dot-label').removeClass('active');
+        $self.find('input[type="radio"]').trigger('click');
+    });
+
+    $('input[name="dot[type]"]').click(function (e) {
+        e.stopPropagation();
+        var $self = $(this);
+        var key = $self.data('mmMax');
+        var val = $self.val();
+
+        pricing = 0;
+        try {
+            pricing = response[val][key];
+        } catch (error) {
+            pricing = 0;
+        }
+
+        calcualteDotPricing();
+    });
+
+    function calcualteDotDesc($this) {
+
+        if ( ! $this.length ) return '';
+
+        try {
+            var min = $this.data('mmMin');
+            var max = $this.data('mmMax');
+            var val = $this.val();
+
+            return min + '-' + max + 'x ' + + val + 'mm';
+        } catch (err) {
+            return '';
+        }
+    }
+
+    function calcualteDotPricing() {
+
+        var prefix = calcualteDotDesc( $('input[name="dot[type]"]:checked') );
+
+        var addToDesc = '';
+        var fixedPrice = 0;
+        var percentagePrice = 0;
+
+        $('input[name="dot[extra]"]:checked').each(function (index, item) {
+            var fm = $(this).data('formula');
+            switch ( fm ) {
+                case 'addToDesc':
+                    if ( addToDesc )
+                        addToDesc += ', ' + $(this).val();
+                    else
+                        addToDesc += $(this).val();
+                    break;
+                case 'addPricing':
+                    fixedPrice = $(this).data('price');
+                    if ( addToDesc )
+                        addToDesc += ', ' + $(this).val();
+                    else
+                        addToDesc += $(this).val();
+                    break;
+                case 'addPricingPercentage':
+                    percentagePrice = parseFloat(pricing * 0.25);
+                    if ( addToDesc )
+                        addToDesc += ', ' + $(this).val();
+                    else
+                        addToDesc += $(this).val();
+                    break;
+            }
+        });
+
+        if ( prefix )
+            $('#dot_desc').val(prefix + ', ' + addToDesc);
+        else
+            $('#dot_desc').val(addToDesc);
+
+        $('#dot_pricing').val(parseInt(fixedPrice + percentagePrice));
+        $('#dot_price').val(parseInt(pricing) + parseInt(fixedPrice + percentagePrice));
+
+        if ( pricing == 0 ) {
+            $('#dot_price').val('');
+        }
+
+    }
+
+    $('.dot-label-cb').click(function (e) {
+        var $self = $(this);
+        $self.find('input[name="dot[extra]"]').trigger('click');
+    });
+
+    $('input[name="dot[extra]"]').click(function (e) {
+        e.stopPropagation();
+        calcualteDotPricing();
+    });
+
+    $('#addDotInfo').click(function (event) {
+
+        var dotPrice = $('#dot_price').val();
+        var dotDesc = $('#dot_desc').val();
+        var dotNumber = $('#dot_number').val();
+
+        dotInfoHolder[dotNumber] = {
+            "price": dotPrice,
+            "description": dotDesc,
+            "tech": $('#dot_tech').val(),
+        };
+
+        $('#'+type+' .dot-'+dotNumber).css({
+            "background-color": "#ed1c24"
+        });
+
+        disabledTab(type);
+        $('#dotPreviewModal').modal('toggle');
+    });
+
+    function generateInvoice() {
+        $.each(dotInfoHolder, function (k, v) {
+            $('[name="invoice[damage'+k+'][tech]"]').val(v.tech);
+            $('input[name="invoice[damage'+k+'][price]"]').val(v.price);
+            $('input[name="invoice[damage'+k+'][description]"]').val(v.description);
+        });
+
+        calculateInvoiceSubTotalPrice();
+    }
+
+    $('.invoice_price').blur(function (e) {
+        calculateInvoiceSubTotalPrice();
+    });
+    $('.invoice_price').change(function (e) {
+        calculateInvoiceSubTotalPrice();
+    });
+    $('.invoice_price').keyup(function (e) {
+        calculateInvoiceSubTotalPrice();
+    });
+
+    $('.invoice_price_calculate').blur(function (e) {
+        calculateInvoiceSubTotalPrice();
+    });
+    $('.invoice_price_calculate').change(function (e) {
+        calculateInvoiceSubTotalPrice();
+    });
+    $('.invoice_price_calculate').keyup(function (e) {
+        calculateInvoiceSubTotalPrice();
+    });
+
+    function disabledTab( enableType ) {
+
+        enableType = '#' + enableType;
+        $('#vehicles a[href='+enableType+']').click();
+
+        $('#vehicles a[href="#car"]').removeAttr('data-toggle');
+        $('#vehicles a[href="#truck"]').removeAttr('data-toggle');
+        $('#vehicles a[href="#suv"]').removeAttr('data-toggle');
+
+        $('#vehicles a[href='+enableType+']').attr('data-toggle');
+    }
+
+    function calculateInvoiceSubTotalPrice() {
+        var subTotal = 0;
+        $('.invoice_price').each(function() {
+            if ( $(this).val() )
+                subTotal += parseInt($(this).val());
+        });
+
+        var tps = subTotal*0.05;
+        var tvq = subTotal * 0.0975;
+
+        var fran = $('input[name="invoice[franchise]"]').val();
+        var deposit = $('input[name="invoice[deposit]"]').val();
+
+        var total = subTotal + tps + tvq - fran;
+
+        var balance = total - deposit;
+
+        $('input[name="invoice[tps]"]').val(tps.toFixed(2));
+        $('input[name="invoice[tvq]"]').val(tvq.toFixed(2));
+        $('input[name="invoice[subtotal]"]').val(subTotal.toFixed(2));
+        $('input[name="invoice[total]"]').val(total.toFixed(2));
+        $('input[name="invoice[deposit]"]').val(deposit);
+        $('input[name="invoice[balance]"]').val(balance.toFixed(2));
+    }
+
+    $('#scanVIN').click(function () {
+        var $this = $('#vin');
+        if ( $this.val().trim().length == 17 ) {
+            getVinData($this.val().trim());
+        } else {
+            $('#vin').notify('VIN number is not valid.');
+        }
+    });
+    /*$('#vin').keypress(function(e) {
+        if(e.which == 13) {
+            var $this = $(this);
+            if ( $this.val().trim().length >= 16 ) {
+                getVinData($(this).val().trim());
+            }
+        }
+    });*/
+
+    var getVinData = function (vinNumber) {
+        $('#vinAreaOverlay').show();
+        $.post('/admin/ajax/ajax_vin_data.php', { 'action': 'vin', 'vin_number': vinNumber })
+            .done(function (resp) {
+                resp = $.parseJSON(resp);
+                if ( resp.status ) {
+                    var v = resp.results;
+                    $('#brand').val(v.brand);
+                    $('#model').val(v.model);
+                    $('#year').val(v.year);
+                    $('#inventory').val(v.inventory);
+                    $('#sn').val(v.sn);
+                    $('#pa').val(v.pa);
+                    $('#bt').val(v.bt);
+                    $('#color').val(v.color);
+                } else {
+                    alert('Wrong VIN!');
+                }
+                $('#vinAreaOverlay').hide();
+            })
+            .fail(function (err) {
+                $('#vinAreaOverlay').hide();
+                console.log(err);
+            })
+        ;
+    };
+
+    var loadInvoice = function() {
+        if ( $('#page-name').length && typeof javascriptObject != 'undefined' ) {
+            if ( ! $.isEmptyObject(javascriptObject) )
+                dotInfoHolder = javascriptObject;
+        }
+
+        //fill dot
+        $.each(dotInfoHolder, function (type, obj) {
+            if ( $.isEmptyObject(obj) === false ) {
+                $.each(obj, function (dot, details) {
+                    $('.dot-' + type).css({
+                        "background-color": "#ed1c24"
+                    });
+                });
+                //disabledTab(type);
+            }
+        });
+
+        //fill form data
+        //var savedRequest = $.parseJSON(savedRequest);
+        $.each(savedRequest, function (key, value) {
+            if ( key == 'client_id' ) { $('#clientid').val(value); }
+            if ( key == 'f_name' ) { $('#client_fname').val(value); }
+            if ( key == 'l_name' ) { $('#client_lname').val(value); }
+            if ( key == 'tel' ) { $('#client_tel1').val(value); }
+            if ( key == 'email' ) { $('#client_email').val(value); }
+            if ( key == 'serial_no' ) { $('#sn').val(value); }
+            if ( key == 'particular_area' ) { $('#pa').val(value); }
+            if ( key == 'brake_type' ) { $('#bt').val(value); }
+            if ( key == 'rental_agreement' ) { $('#invoice_location').val(value); }
+            if ( key == 'rental_car' ) {
+                if ( value == 1 ) {
+                    $('#rental_car').attr('checked', true);
+                } else {
+                    $('#rental_car').attr('checked', false);
+                }
+            }
+            if ( key == 'javascript_object' ) {  }
+            if ( key == 'latest_request' ) {  }
+            if ( key == 'damages' ) { $('#invoice_location').text(value); }
+            if ( key == 'inv_parts_price' ) { $('#part_price').val(value); $('#inv_parts_price').val(value); }
+            $('#'+key).val(value);
+        });
+    };
+
+    if ( $('#page-name').length && $('#page-name').data('pageName') == 'invoice' && $('#page-name').data('status') =='draft' ) {
+
+        window.setTimeout(function () {
+            loadInvoice();
+        }, 2000);
+
+        var autoSaveInvoice = function ( complete ) {
+
+            var error = [];
+
+            var invoiceData = {
+                invoice_id: $('#page-name').data('invoiceId'),
+                date: $('#date').val(),
+                tech: $('#tech').val(),
+                client_id: $('#clientid').val(),
+                f_name: $('#client_fname').val(),
+                l_name: $('#client_lname').val(),
+                reclamation: $('#reclamation').val(),
+                tel: $('#client_tel1').val(),
+                company: $('#client_cie').val(),
+                email: $('#client_email').val(),
+                insurer: $('#insurer').val(),
+                vin: $('#vin').val(),
+                brand: $('#brand').val(),
+                model: $('#model').val(),
+                year: $('#year').val(),
+                inventory: $('#inventory').val(),
+                serial_no: $('#sn').val(),
+                color: $('#color').val(),
+                particular_area: $('#pa').val(),
+                brake_type: $('#bt').val(),
+                millage: $('#millage').val(),
+                rental_agreement: $('#invoice_location').val(),
+                rental_car: $('#rental_car').is(':checked') ? 1 : 0,
+                payment_status: $('#payment_status').val(),
+                javascript_object: dotInfoHolder,
+                sub_total: $('#sub_total').val(),
+                tps: $('#tps').val(),
+                tvq: $('#tvq').val(),
+                franchise: $('#franchise').val(),
+                total: $('#total').val(),
+                deposit: $('#deposit').val(),
+                balance: $('#balance').val(),
+                damages: $('#damages').val(),
+                payment_method: $('input[name="payment_method"]:checked').val(),
+                number_of_days: $('#number_of_days').val(),
+            };
+
+            if ( complete ) {
+                invoiceData['confirm_invoice'] = 1;
+            }
+
+            try {
+                var $apiSignaturePad = $('#signature-pad').signaturePad();
+                if ( $apiSignaturePad.getSignature().length ) {
+                    invoiceData['signature_img'] = $apiSignaturePad.getSignatureImage();
+                    invoiceData['signature'] = $apiSignaturePad.getSignatureString();
+                }
+            } catch (e) {}
+
+
+            $.each(damages, function (k, v) {
+                $.each(subs, function (subKey, subValue) {
+                    if ( $('#inv_' + v + '_' + subValue).length ) {
+                        var currentItemValue = $('#inv_' + v + '_' + subValue).val();
+                        invoiceData['inv_' + v + '_' + subValue] = currentItemValue;
+                    }
+                });
+            });
+
+            $.ajax({
+                url: '/admin/ajax/ajax_save_invoice.php',
+                type: 'post',
+                data: invoiceData,
+                success: function (resp) {
+                    if ( complete ) {
+                        window.location.href = '/admin/';
+                    }
+                    else {
+                        $.notify("Auto saving....", "success");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    $.notify(error, "error");
+                }
+            },'json');
+        };
+        /*var interval = window.setInterval(function () {
+            autoSaveInvoice(false);
+        }, 1000 * 30);*/
+        var interval2 = window.setInterval(function () {
+            $.post(AJAX_URL, { "action": "get_invoice_photo", "invoice_id": $('#page-name').data('invoiceId') }, function (response) {
+                $('#photo_view').html(response);
+            });
+        }, 1000 * 5);
+    }
+
+    $('#invoice_continue_edit').click(function () {
+        $('#invoice_alert').hide();
+    });
+
+    $('.stripping').click(function () {
+        var $this = $(this);
+        var $sp = $('#stripping_price');
+        var currentValue = $sp.val() ? parseInt($sp.val()) : 0;
+
+        if ( $this.is(':checked') ) {
+            $sp.val( parseInt(currentValue) + parseInt($this.data('price')) );
+        } else {
+            $sp.val( parseInt(currentValue) - parseInt($this.data('price')) );
+        }
+    });
+
+    $('#stripping_add').click(function () {
+
+        var no_validate = true;
+
+        var $sp = $('#stripping_price');
+        var $sn = $('#stripping_note');
+        var $st = $('#stripping_tech');
+
+        if ( ( $sp.val() && $sn.val() && $st.val() ) || no_validate ) {
+            dotInfoHolder['stripping'] = {
+                "price": $sp.val(),
+                "description": $sn.val(),
+                "tech": $st.val()
+            };
+            generateInvoice();
+            $(this).notify('Ajouté à la facture', {
+                position: "right",
+                className: 'success',
+            });
+        }
+        else {
+            $(this).notify('Price, note and tech values are required.', {
+                position:"right",
+                className: 'error',
+            });
+        }
+    });
+
+
+    $('#oversize_dent').change(function () {
+        var $this = $(this);
+        var $ofp = $('#other_fees_price');
+        var $oftp = $('#other_fees_total_price');
+
+        if ( $this.val() < 0 )
+            $this.val(0);
+
+        var oversize_dent_price = $this.val();
+        var other_fees_price = $ofp.val() > 0 ? $ofp.val() : 0;
+
+        $oftp.val( oversize_dent_price * 3 );
+    });
+
+    $('#other_fees_price').change(function () {
+        var $this = $(this);
+        var $ofp = $('#oversize_dent');
+        var $oftp = $('#other_fees_total_price');
+
+        if ( $this.val() < 0 )
+            $this.val(0);
+
+        var oversize_dent_price = $this.val();
+        var other_fees_price = $ofp.val() > 0 ? $ofp.val() : 0;
+
+        $oftp.val( parseInt(oversize_dent_price) + parseInt(other_fees_price) );
+    });
+
+    $('#other_fees_add_button').click(function () {
+
+        var no_validate = true;
+
+        var $other_fees_description = $('#other_fees_description');
+        var $other_fees_total_price = $('#other_fees_total_price');
+
+        if ( ( $other_fees_description.val().trim().length && $other_fees_total_price.val() > 0 ) || no_validate ) {
+
+            dotInfoHolder['other_fees'] = {
+                "price": $other_fees_total_price.val(),
+                "description": $other_fees_description.val(),
+                "tech": 0
+            };
+            generateInvoice();
+
+            $(this).notify('Ajouté à la facture.', {
+                position:"right",
+                className: 'success',
+            });
+        } else {
+            $(this).notify('Total Price and description is required.', {
+                position:"right",
+                className: 'error',
+            });
+        }
+    });
+
+    $('#glazier_add').click(function () {
+
+        var no_validate = true;
+
+        var $glazier_tech = $('#glazier_tech');
+        var $glazier_note = $('#glazier_note');
+        var $glazier_price = $('#glazier_price');
+
+        if ( ($glazier_note.val().trim().length && $glazier_price.val() > 0 && $glazier_tech.val().trim().length) || no_validate ) {
+
+            dotInfoHolder['glazier'] = {
+                "price": $glazier_price.val(),
+                "description": $glazier_note.val(),
+                "tech": $glazier_tech.val(),
+            };
+            generateInvoice();
+
+            $(this).notify('Ajouté à la facture.', {
+                position:"right",
+                className: 'success',
+            });
+        } else {
+            $(this).notify('Price, tech and description is required.', {
+                position:"right",
+                className: 'error',
+            });
+        }
+    });
+
+    $('#work_force_add').click(function () {
+
+        var no_validate = true;
+
+        var $work_force_note = $('#work_force_note');
+        var $work_force_price = $('#work_force_price');
+
+        if ( ($work_force_note.val().trim().length && $work_force_price.val() > 0) || no_validate ) {
+
+            dotInfoHolder['work_force'] = {
+                "price": $work_force_price.val(),
+                "description": $work_force_note.val(),
+                "tech": 0,
+            };
+            generateInvoice();
+
+            $(this).notify('Ajouté à la facture.', {
+                position:"right",
+                className: 'success',
+            });
+        } else {
+            $(this).notify('Price and description is required.', {
+                position:"right",
+                className: 'error',
+            });
+        }
+    });
+
+    $('#parts_add').click(function () {
+
+        var $part_price = $('#part_price');
+
+        if ( $part_price.val() > 0 ) {
+
+            dotInfoHolder['parts'] = {
+                "price": $part_price.val(),
+                "description": parseInt($('#total_parts').val()) + ' part' + ( parseInt($('#total_parts').val()) > 1 ? 's' : '' ),
+                "tech": 0,
+            };
+            generateInvoice();
+
+            $(this).notify('Ajouté à la facture.', {
+                position:"right",
+                className: 'success',
+            });
+
+            //SAVE Parts for Reporting
+            var parts = [];
+            for ( var p = 1; p <= 10; p++ ) {
+                var part = $('#part_' + p).val();
+                var part_received_status = $('#part_received_' + p).is(':checked');
+                var part_order_status = $('#part_order_' + p).is(':checked');
+                var part_price = $('#part_price_' + p).val();
+
+                if ( $.trim(part) && $.trim(part_price) && $.trim(part_price) > 0  ) {
+                    parts.push( {
+                        'name': part,
+                        'price': part_price,
+                        'ordered': part_order_status ? 1 : 0,
+                        'received': part_received_status ? 1 : 0,
+                    } );
+                }
+            }
+
+            var invoiceId = $('#page-name').data('invoiceId');
+            if ( parts.length > 0 ) {
+                $.post('/admin/ajax/ajax_save_parts.php', { 'invoice_id': invoiceId, "parts": parts }, function (resp) {
+
+                });
+            }
+        }
+        /*else {
+            $(this).notify('Total price is required.', {
+                position:"right",
+                className: 'error',
+            });
+        }*/
+    });
+
+    $('.part-price').change(function (e) {
+        var ttl = 0, total = 0;
+        $('.part-price').each(function () {
+            var currentValue = $(this).val();
+            if ( currentValue && currentValue > 0 ) {
+                total += parseInt(currentValue);
+                ttl++;
+            }
+        });
+
+        $('#part_price').val(total);
+        $('#total_parts').val(ttl);
+    });
+
+    $('#signature-pad').signaturePad({
+        drawOnly: true,
+        defaultAction: 'drawIt',
+        validateFields: false,
+        lineWidth: 0,
+        output: null,
+        sigNav: null,
+        name: null,
+        typed: null,
+        clear: '#signature-clear',
+        typeIt: null,
+        drawIt: null,
+        typeItDesc: null,
+        drawItDesc: null,
+        bgColour:'transparent'
+    });
+
+    $('#saveInvoice').click(function (e) {
+        autoSaveInvoice(true);
+    });
+
+    $(document).on('click', '.delete-photo', function (event) {
+
+        var alt = $(this).data('alt');
+
+        if ( confirm('Are you sure to delete this iamge?') ) {
+            var id = $(this).data('id');
+            var action_name = $(this).data('action') || "delete_invoice_photo";
+            $.post(AJAX_URL, { "action": action_name, "id": id }, function (response) {
+                response = $.parseJSON(response);
+                if ( response.status ) {
+                    $('#photo-div-' + $(this).data('id')).remove();
+                    // $('.dz-image > img[*alt="'+alt+'"]').closest('.dz-preview').remove();
+                    $('.dz-filename span').each(function() {
+                        var imgAlt = $(this).text();
+                        var splitValue = imgAlt.split('.', 2);
+                        var imgFirstPart = splitValue[0];
+                        if ( alt.indexOf( imgFirstPart ) !== false ) {
+                            setTimeout(function () {
+                                $('.dz-image > img[alt="'+imgAlt+'"]').closest('.dz-preview').remove();
+                            }, 3000);
+                        }
+                    });
+                }
+            });
+        }
+
+    });
+
+    $('#reclamation').keyup(function () {
+        var v = $(this).val().trim();
+        v = v.replace(/[^a-z0-9]/gi,'');
+        $(this).val(v);
+    })
+    $('.reclamation-check').blur(function () {
+        checkReclamation($(this));
+    });
+
+    $('#clients').change(function () {
+        var clientId = '', clientFirstName = '', clientLastName = '', clientCIE = '', clientEmail = '', clientTel = '';
+        var currentClientId = $(this).val();
+
+        if ( currentClientId ) {
+            $.each(clients, function (k, v) {
+                if ( v.clientid == currentClientId ) {
+                    clientId = v.clientid;
+                    clientFirstName = v.fname;
+                    clientLastName = v.lname;
+                    clientCIE = v.cie;
+                    clientTel = v.tel1;
+                    clientEmail = v.email;
+                }
+            });
+        }
+
+        $('#clientid').val(clientId);
+        $('#client_fname').val(clientFirstName);
+        $('#client_lname').val(clientLastName);
+        $('#client_email').val(clientEmail);
+        $('#client_tel1').val(clientTel);
+        $('#client_cie').val(clientCIE);
+    });
+
+    $('#payment-button').click(function () {
+        if ( $(this).data('value') == 'Payment Pending' ) {
+            $(this).data('value', 'PAID').removeClass('btn-danger').addClass('btn-success').text('PAID');
+            $('#payment_status').val(1);
+        } else {$('#payment_status').val(1);
+            $(this).data('value', 'Payment Pending').removeClass('btn-success').addClass('btn-danger').text('Payment Pending');
+            $('#payment_status').val(0);
+        }
+    });
+
+    var getUrlParameter = function getUrlParameter(sParam) {
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+            sURLVariables = sPageURL.split('&'),
+            sParameterName,
+            i;
+
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+
+            if (sParameterName[0] === sParam) {
+                return sParameterName[1] === undefined ? true : sParameterName[1];
+            }
+        }
+    };
+
+    function goToByScroll(id){
+        // Remove "link" from the ID
+        id = id.replace("link", "");
+        // Scroll
+        $('html,body').animate({
+                scrollTop: $("#"+id).offset().top},
+            'slow');
+    }
+
+    if(getUrlParameter('from') == 'parts_report'){
+        $('#partsHead h4 a').trigger('click');
+        $('html,body').animate({
+                scrollTop: $("#strippingHead").offset().top},
+            'slow');
+    }
+
+} );
+
+
+function checkReclamation($selector) {
+    var rec = $selector.val();
+
+    if ( ! $selector.siblings('span').length ) {
+        $selector.after('<span class="help-block"></span>');
+    } else {
+        $selector.siblings('span').html('');
+    }
+
+    $.post("/admin/ajax/ajax_check_reclamation.php", {"reclamation": rec}, function (response) {
+        response = $.parseJSON(response);
+        if ( response.status == 0 ) {
+            $selector.siblings('span').html(response.message).css({
+                'color': 'red',
+                'font-size': '12px',
+            });
+        }
+    });
+}

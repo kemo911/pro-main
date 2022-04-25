@@ -1,0 +1,244 @@
+/**
+ * PHP Login & User Management
+ *
+ * Copyright 2012 Jigowatt, LTD
+ */
+body {
+    position: relative;
+    padding-top: 80px;
+    padding-bottom: 40px;
+}
+.languageSelect { float:right; }
+.sidebar-nav { padding: 9px 0 }
+.avail {
+    border-color: #57a957;
+    color: #468847;
+}
+.exists {
+    border-color: #ee5f5b;
+    color: #b94a48;
+}
+a.signup-link em {
+    font-style: normal;
+    font-size: 10px;
+    color: #bababa;
+    margin-right: 6px;
+}
+.signin {
+    max-width: 500px;
+    width: 350px;
+}
+#pbtns a.btn { margin: 6px }
+.modal-btn {
+    margin-top: 45px;
+    float: right;
+}
+form.normal-label label {
+    font-weight: normal;
+    font-size: 11px;
+    color: #999;
+}
+.forgotcenter {
+    text-align:center;
+}
+div.login {
+    float: none;
+    margin: 0 auto;
+    text-align: center;
+}
+.a-tooltip { display:inline-block; }
+.btn.login-submit { margin-right: 70px }
+input[type="checkbox"]#remember,
+.remember { display: inline }
+.login-label { float:left; }
+span.forgot {
+    font-weight: normal;
+    font-size: 11px;
+    position: fixed;
+    padding-left: 200px;
+}
+input[type="checkbox"] { margin-right: 5px }
+p.signup { margin: 2em }
+.loader { padding: 0 10px }
+#userDrop { cursor: pointer }
+.login h4 { padding-bottom: 1% }
+.info-links a {
+    font-size: 13px!important;
+    margin-left: 10px;
+}
+.features h1 {
+	margin: 36px 0 27px;
+	font-size: 40px;
+	font-weight: 300;
+	text-align: center;
+}
+.features p.intro {
+	text-align: center;
+	font-size: 18px;
+	color: #777;
+	margin: 0.5em 0 3em;
+}
+
+.jumbotron {
+	text-align:left;
+	padding: 105px 620px 0 0 !important;
+	margin-right: -80px;
+	background: url('../img/main-hero.png') right bottom no-repeat;
+}
+.jumbotron h1 {
+	font-size: 55px;
+	margin-top: 0.2em;
+	line-height: 1.1;
+	font-weight: normal;
+}
+.jumbotron h2 {
+	font-weight:normal;
+}
+.jumbotron p {
+   margin: 1em 0;
+}
+.gravatar {
+    padding: 1px;
+    display: inline;
+}
+.dropdown.open .dropdown-toggle {
+	color: #222;
+}
+
+/** Responsive styles */
+@media (min-width:768px) and (max-width:980px) {
+}
+@media (max-width:980px) {
+}
+@media (max-width:480px) {
+	.jumbotron {
+		background: none;
+	}
+}
+@media (min-width:480px) and (max-width:768px) {
+    .jumbotron {
+        background: none;
+    }
+}
+.choiceLabel {
+    margin-left: 10px;
+}
+
+.choiceLabel > div {
+    display: inline-block;
+    margin-right: 4px;
+}
+
+.choiceLabel label {
+    margin-left: 3px;
+}
+.input-mini { width:60px !important; }
+.input-large { width:150px; }
+#reports-message .img-thumbnail{ margin-bottom:20px; }
+#topUsers, #registeredUsersGraph{ height:368px;}
+
+
+.tabs-below > .nav-tabs,
+.tabs-right > .nav-tabs,
+.tabs-left > .nav-tabs {
+  border-bottom: 0;
+}
+
+.tab-content > .tab-pane,
+.pill-content > .pill-pane {
+  display: none;
+}
+
+.tab-content > .active,
+.pill-content > .active {
+  display: block;
+}
+
+.tabs-below > .nav-tabs {
+  border-top: 1px solid #ddd;
+}
+
+.tabs-below > .nav-tabs > li {
+  margin-top: -1px;
+  margin-bottom: 0;
+}
+
+.tabs-below > .nav-tabs > li > a {
+  -webkit-border-radius: 0 0 4px 4px;
+     -moz-border-radius: 0 0 4px 4px;
+          border-radius: 0 0 4px 4px;
+}
+
+.tabs-below > .nav-tabs > li > a:hover,
+.tabs-below > .nav-tabs > li > a:focus {
+  border-top-color: #ddd;
+  border-bottom-color: transparent;
+}
+
+.tabs-below > .nav-tabs > .active > a,
+.tabs-below > .nav-tabs > .active > a:hover,
+.tabs-below > .nav-tabs > .active > a:focus {
+  border-color: transparent #ddd #ddd #ddd;
+}
+
+.tabs-left > .nav-tabs > li,
+.tabs-right > .nav-tabs > li {
+  float: none;
+}
+
+.tabs-left > .nav-tabs > li > a,
+.tabs-right > .nav-tabs > li > a {
+  min-width: 74px;
+  margin-right: 0;
+  margin-bottom: 3px;
+}
+
+.tabs-left > .nav-tabs {
+  float: left;
+  margin-right: 19px;
+  border-right: 1px solid #ddd;
+}
+
+.tabs-left > .nav-tabs > li > a {
+  margin-right: -1px;
+  -webkit-border-radius: 4px 0 0 4px;
+     -moz-border-radius: 4px 0 0 4px;
+          border-radius: 4px 0 0 4px;
+}
+
+.tabs-left > .nav-tabs > li > a:hover,
+.tabs-left > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #dddddd #eeeeee #eeeeee;
+}
+
+.tabs-left > .nav-tabs .active > a,
+.tabs-left > .nav-tabs .active > a:hover,
+.tabs-left > .nav-tabs .active > a:focus {
+  border-color: #ddd transparent #ddd #ddd;
+  *border-right-color: #ffffff;
+}
+
+.tabs-right > .nav-tabs {
+  float: right;
+  margin-left: 19px;
+  border-left: 1px solid #ddd;
+}
+
+.tabs-right > .nav-tabs > li > a {
+  margin-left: -1px;
+  -webkit-border-radius: 0 4px 4px 0;
+     -moz-border-radius: 0 4px 4px 0;
+          border-radius: 0 4px 4px 0;
+}
+
+.tabs-right > .nav-tabs > li > a:hover,
+.tabs-right > .nav-tabs > li > a:focus {
+  border-color: #eeeeee #eeeeee #eeeeee #dddddd;
+}
+
+.tabs-right > .nav-tabs .active > a,
+.tabs-right > .nav-tabs .active > a:hover,
+.tabs-right > .nav-tabs .active > a:focus {
+  border-color: #ddd #ddd #ddd transparent;
+  *border-left-color: #ffffff;
+}

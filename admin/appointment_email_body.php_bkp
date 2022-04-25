@@ -1,0 +1,87 @@
+<table style="text-align: left;" cellspacing="0" cellpadding="0">
+    <tr style="background: #000;">
+        <td colspan="4" style="color: #fff; font-size: 18px; padding: 5px 10px;">Details</td>
+    </tr>
+    <tr>
+        <td style="padding-right: 10px;">Date:</td>
+        <td style="width: 250px;"><?php echo date('F j, Y', strtotime($appointment['date'])) ;?></td>
+        <td style="padding-right: 10px;">Reclamation:</td>
+        <td><span class="label label-warning">#<?php echo $appointment['reclamation'] ;?></span></td>
+    </tr>
+    <tr>
+        <td>Client Name:</td>
+        <td><?php echo $appointment['client_name'] ;?></td>
+        <td>Client Email:</td>
+        <td><?php echo $appointment['email'] ;?></td>
+    </tr>
+    <tr>
+        <td>Company:</td>
+        <td><?php echo $appointment['cie'] ;?></td>
+        <td>Telephone:</td>
+        <td><?php echo $appointment['tel1'] ;?></td>
+    </tr>
+    <tr>
+        <td>Insurer:</td>
+        <td><?php echo $appointment['insurer'] ;?></td>
+    </tr>
+    <tr>
+        <td colspan="1">VIN: </td>
+        <td colspan="3"><?php echo $appointment['vin']; ?></td>
+    </tr>
+    <tr>
+        <td>Brand:</td>
+        <td><?php echo $appointment['brand']; ?></td>
+        <td>Model:</td>
+        <td><?php echo $appointment['model']; ?></td>
+    </tr>
+    <tr>
+        <td>Year:</td>
+        <td><?php echo $appointment['year']; ?></td>
+        <td>Inventory:</td>
+        <td><?php echo $appointment['inventory']; ?>
+    </tr>
+    <tr>
+        <td>Color:</td>
+        <td><?php echo $appointment['color']; ?></td>
+        <td>Brake Type:</td>
+        <td><?php echo $appointment['brake_type']; ?></td>
+    </tr>
+    <tr>
+        <td>Particular Area:</td>
+        <td><?php echo $appointment['particular_area']; ?></td>
+        <td>Millage:</td>
+        <td><?php echo $appointment['millage']; ?></td>
+    </tr>
+    <!--START: Schedule-->
+    <tr style="background: #000;">
+        <td colspan="4" style="color: #fff; font-size: 18px; padding: 5px 10px;">Schedule</td>
+    </tr>
+    <tr>
+        <td colspan="4" style="font-size: 17px;"><?php echo ucfirst($appointment['type']); ?> appointment</td>
+    </tr>
+    <tr>
+        <td colspan="1">Estimator/Tech:</td>
+        <td colspan="3"><?php echo $appointment['tech_name']; ?></td>
+    </tr>
+    <tr>
+        <td colspan="1">Address:</td>
+        <td colspan="3"><?php echo $appointment['schedule_address']; ?></td>
+    </tr>
+    <tr>
+        <td colspan="1">Heure:</td>
+        <td colspan="3"><span class="label label-success"><?php echo $appointment['start_time']; ?></span> to <span class="label label-info"><?php echo $appointment['end_time']; ?></span></td>
+    </tr>
+    <tr>
+        <td colspan="1">Note:</td>
+        <td colspan="3"><?php echo $appointment['notes']; ?></td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <?php echo $appointment['checkbox_not_presented'] == 1 ? 'Ne cest pas presente <br/>' : '' ?>
+            <?php echo $appointment['checkbox_total_loss'] == 1 ? 'Pere total <br/>' : '' ?>
+            <?php echo $appointment['checkbox_want_repair_appointment'] == 1 ? 'Ne veux pas fixer de rdv pour la reparation <br/>' : '' ?>
+            <?php echo $appointment['checkbox_monetary_compensation'] == 1 ? 'Compensation moniaitaire <br/>' : '' ?>
+            <?php echo $appointment['checkbox_call_back_for_appointment'] == 1 ? 'Call back for appointment <br/>' : '' ?>
+        </td>
+    </tr>
+</table>

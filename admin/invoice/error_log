@@ -1,0 +1,8 @@
+[02-Aug-2021 07:52:52 UTC] PHP Fatal error:  Uncaught Error: Cannot use object of type MareiObj as array in /home4/bosseesg/public_html/promutuel/admin/invoice/index.php:180
+Stack trace:
+#0 {main}
+  thrown in /home4/bosseesg/public_html/promutuel/admin/invoice/index.php on line 180
+[02-Aug-2021 12:35:40 UTC] PHP Warning:  A non-numeric value encountered in /home4/bosseesg/public_html/promutuel/admin/invoice/index-email.php on line 15
+[08-Sep-2021 11:23:07 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home4/bosseesg/public_html/promutuel/admin/classes/functions.php on line 1017
+[08-Sep-2021 11:23:07 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home4/bosseesg/public_html/promutuel/admin/classes/functions.php on line 1017
+[08-Sep-2021 11:23:07 UTC] PHP Warning:  Invalid argument supplied for foreach() in /home4/bosseesg/public_html/promutuel/admin/classes/functions.php on line 1017

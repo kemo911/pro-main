@@ -1,0 +1,37 @@
+.filterFields{
+    margin-bottom: 10px;
+}
+.filterFields .field{
+    width: 145px;
+    float: left;
+    margin-right: 5px;
+}
+.filterFields .field.date{
+    width: 229px;
+}
+.filterFields .field.date input{
+    width: 113px;
+    float: left;
+}
+.filterFields .field.date input, .filterFields .field select{
+    height: 35px;
+    font-size: 13px;
+}
+.filterFields .field select{
+    padding: 0;
+}
+.filterFields .field.date input#start_date{
+    margin-right: 3px;
+}
+.summary{
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid #ecf0f1;
+}
+.summary table td.summary-label{
+    padding-right: 30px;
+    font-weight: bold;
+}
+.summary table td{
+    padding: 3px;
+}

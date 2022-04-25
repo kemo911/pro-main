@@ -1,0 +1,84 @@
+#schedule-calendar .fc-day {
+    background-color: rgba(92, 92, 92, 0.48);
+}
+.fc-bgevent {
+    opacity: 1;
+}
+
+.schedule-block {
+    background-color: rgba(221, 221, 221, 0.85);
+}
+
+.estimate-appointment-block {
+    background-color: #3498db;
+    color: #ffffff;
+}
+.estimate-repair-block {
+    background-color: #e74c3c;
+    color: #ffffff;
+}
+
+.estimate-combined-block {
+    background: linear-gradient(to right, #e74c3c 0%, #e74c3c 50%, #0099ff 50%, #3498db 50%,#3498db 100%);
+}
+
+.available-schedule {
+    background: #dddddd;
+    border: 1px solid #aaaaaa;
+    max-width: 75px;
+}
+
+.sc-label {
+    font-size: 10px;
+    font-weight: bold;
+    color: #18bc9c;
+    padding: 0;
+    position: absolute;
+    bottom: -24px;
+    text-align: center;
+}
+
+.estimate-schedule {
+    background: #3498db;
+    max-width: 71px;
+    border-radius: 0;
+    opacity: 1;
+    border: 1px solid #666;
+    z-index: 1000;
+    min-height: 16px;
+}
+
+.repair-schedule {
+    background: #e74c3c;
+    max-width: 71px;
+    border: 1px solid #666;
+    border-radius: 0;
+    opacity: 1;
+    z-index: 1000;
+    min-height: 16px;
+}
+
+.estimate-schedule .fc-time,
+.repair-schedule .fc-time {
+    display: none !important;
+}
+
+.fc-event .fc-bg {
+    z-index: 1;
+    background: #fff;
+    opacity: 0;
+}
+
+.estimate-schedule .fc-title,
+.repair-schedule .fc-title {
+    text-align: center !important;
+    font-size: 12px !important;
+    text-decoration: none !important;
+}
+
+@media (min-width: 768px) {
+    .modal-dialog {
+        width: 760px;
+        margin: 30px auto;
+    }
+}

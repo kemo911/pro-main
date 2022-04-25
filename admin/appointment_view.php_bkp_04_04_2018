@@ -1,0 +1,217 @@
+<?php
+
+include_once(dirname(dirname(__FILE__)) . '/classes/check.class.php');
+include_once(dirname(dirname(__FILE__)) . '/admin/classes/functions.php');
+protect("*");
+$estimationId = null;
+$pageClass = 'appointment_view';
+
+$appointmentId = !empty($_GET['appointment_id']) ? intval($_GET['appointment_id']) : 0;
+
+$appointment = getAppointment( $appointmentId );
+$appointmentPhotos = getAppointmentPhotos( $appointmentId );
+if ( !empty($appointment) ) {
+    $reclamationId = getReclamationByAppointmentData($appointment[0]);
+    $estimationId = getEstimationIdByReclamation($appointment[0]['reclamation']);
+}
+
+include_once('header.php');
+?>
+<div class="container">
+    <div class="row">
+
+        <?php if ( !empty($appointment) ): $appointment = $appointment[0]; ?>
+        <div class="col-md-8">
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Details</div>
+                <div class="panel-body">
+
+                    <table class="table table-responsive">
+                        <tr>
+                            <th>Date:</th>
+                            <td><?php echo date('F j, Y', strtotime($appointment['date'])) ;?></td>
+                            <th>Reclamation:</th>
+                            <td><span class="label label-warning">#<?php echo $appointment['reclamation'] ;?></span></td>
+                        </tr>
+
+                        <tr>
+                            <th>Client Name:</th>
+                            <td><?php echo $appointment['client_name'] ;?></td>
+                            <th>Client Email:</th>
+                            <td><?php echo $appointment['email'] ;?></td>
+
+                        </tr>
+
+                        <tr>
+                            <th>Company:</th>
+                            <td><?php echo $appointment['cie'] ;?></td>
+
+                            <th>Telephone:</th>
+                            <td><?php echo $appointment['tel1'] ;?></td>
+                        </tr>
+
+                        <tr>
+                            <th>Insurer:</th>
+                            <td><?php echo $appointment['insurer'] ;?></td>
+                        </tr>
+
+                    </table>
+
+                    <hr>
+
+                    <table class="table table-responsive">
+                        <tr>
+                            <th>VIN: </th>
+                            <td><?php echo $appointment['vin']; ?></td>
+                        </tr>
+
+                        <tr>
+                            <th>Brand:</th><td><?php echo $appointment['brand']; ?></td>
+                            <th>Model:</th><td><?php echo $appointment['model']; ?></td>
+                        </tr>
+
+                        <tr>
+                            <th>Year:</th><td><?php echo $appointment['year']; ?></td>
+                            <th>Inventory:</th><td><?php echo $appointment['inventory']; ?>
+                        </tr>
+
+                        <tr>
+                            <th>Color:</th><td><?php echo $appointment['color']; ?></td>
+                            <th>Brake Type:</th><td><?php echo $appointment['brake_type']; ?></td>
+                        </tr>
+
+                        <tr>
+                            <th>Particular Area:</th><td><?php echo $appointment['particular_area']; ?></td>
+                            <th>Millage:</th><td><?php echo $appointment['millage']; ?></td>
+                        </tr>
+
+                    </table>
+
+                    <hr>
+
+                    <div>
+                        <?php
+
+                            if ( 'repair' == $appointment['type'] ):
+                                $invoiceId = getInvoiceByReclamation( $appointment['reclamation'] );
+                            ?>
+                            <?php if ( $invoiceId ): ?>
+                        <a href="/admin/main.php?invoice_id=<?php echo $invoiceId; ?>" class="btn btn-primary btn-sm"> View Invoice <i class="glyphicon glyphicon-chevron-right"></i></a>
+                            <?php else: ?>
+                                <a href="javascript:void(0);" id="createInvoiceFromAppointment" data-app-id="<?php echo $appointment['id']; ?>" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i> Create Invoice <i class="glyphicon glyphicon-chevron-right"></i></a>
+                            <?php endif; ?>
+                            <?php if ( $estimationId ): ?>
+                                <a href="/admin/mold.php?mold_id=<?php echo $estimationId; ?>" class="btn btn-success btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> View Estimate <i class="glyphicon glyphicon-chevron-right"></i></a>
+                            <?php else: ?>
+                                <a href="javascript:void(0);" class="btn btn-success disabled btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> View Estimate <i class="glyphicon glyphicon-chevron-right"></i></a>
+                            <?php endif; ?>
+                        <?php else:
+
+                            $rdvRepairUrl = "/admin/appointment_create.php?date=" . date('Y-m-d', strtotime($appointment['date'])). "&appointment_type=repair&reclamation_id=" . $reclamationId;
+
+                            $repairScheduleId = getRepairScheduleIdByReclamation($appointment['reclamation']);
+
+                            if ( $repairScheduleId ) {
+                                $rdvRepairUrl = "/admin/appointment_view.php?appointment_id=" . $repairScheduleId;
+                            }
+
+                            $estimateUrl = '/admin/mold.php';
+
+                            if ( $estimationId ) {
+                                $estimateUrl .= '?mold_id=' . $estimationId;
+                            } else {
+                                $estimateUrl .= '?new=true&reclamation_id=' . $reclamationId;
+                            }
+
+                            ?>
+                            <a href="<?php echo $rdvRepairUrl; ?>" class="btn btn-primary btn-sm"><i class="glyphicon glyphicon-plus"></i> RDV Reparation <i class="glyphicon glyphicon-chevron-right"></i></a>
+                            <a href="<?php echo $estimateUrl; ?>" class="btn btn-success btn-sm pull-right"><i class="glyphicon glyphicon-plus"></i> Estimate <i class="glyphicon glyphicon-chevron-right"></i></a>
+                        <?php endif; ?>
+                    </div>
+
+                    <hr>
+
+                    <div id="appointment-photos">
+                        <?php foreach ( $appointmentPhotos as $photo ): ?>
+                            <div style="display: inline-block;" id="photo-div-<?php echo $photo['id']; ?>">
+                        <span>
+                            <a href="/<?php echo $photo['photo_url']; ?>" data-lightbox="image-<?php echo $photo['id']; ?>">
+                            <img class="img img-thumbnail" data-lightbox="image-<?php echo $photo['id']; ?>" src="/<?php echo $photo['photo_url']; ?>" width="100px">
+                        </a>
+                        </span>
+                                <br>
+                                <?php $a = explode('/', $photo['photo_url']); ?>
+                                <span style="color: red; font-size: 12px; text-align: center !important; text-decoration: underline; cursor: pointer;" class="delete-app-photo" data-alt="<?php echo end($a); ?>" data-id="<?php echo $photo['id']; ?>">Delete</span>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+
+
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+
+            <div class="panel panel-primary">
+                <div class="panel-heading">Schedule</div>
+                <div class="panel-body">
+                    <table class="table table-bordered">
+
+                        <tr class="<?php echo $appointment['type'] != 'repair' ? 'success' : 'danger'; ?>">
+                            <th colspan="2">
+                                <?php echo ucfirst($appointment['type']); ?> appointment
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th>Estimator/Tech:</th>
+                            <td><?php echo $appointment['tech_name']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Address:</th>
+                            <td><?php echo $appointment['schedule_address']; ?></td>
+                        </tr>
+                        <tr>
+                            <th>Heure:</th>
+                            <td><span class="label label-success"><?php echo $appointment['start_time']; ?></span> to <span class="label label-info"><?php echo $appointment['end_time']; ?></span></td>
+                        </tr>
+                        <tr>
+                            <th>Note:</th>
+                            <td><?php echo $appointment['notes']; ?></td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <div class="form-group">
+                                    <input type="checkbox" data-appointment-id="<?php echo $appointment['id']; ?>" class="ad-value-update" name="checkbox_not_presented" <?php echo $appointment['checkbox_not_presented'] == 1 ? 'checked' : '' ?> value="1"> Ne cest pas presente <br>
+                                    <input type="checkbox" data-appointment-id="<?php echo $appointment['id']; ?>" class="ad-value-update" name="checkbox_total_loss" <?php echo $appointment['checkbox_total_loss'] == 1 ? 'checked' : '' ?> value="1"> Pere total <br>
+                                    <input type="checkbox" data-appointment-id="<?php echo $appointment['id']; ?>" class="ad-value-update" name="checkbox_want_repair_appointment" <?php echo $appointment['checkbox_want_repair_appointment'] == 1 ? 'checked' : '' ?> value="1"> Ne veux pas fixer de rdv pour la reparation
+                                    <br>
+                                    <input type="checkbox" data-appointment-id="<?php echo $appointment['id']; ?>" class="ad-value-update" name="checkbox_monetary_compensation" <?php echo $appointment['checkbox_monetary_compensation'] == 1 ? 'checked' : '' ?> value="1"> Compensation moniaitaire
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <a class="delete-appointment btn btn-block btn-sm btn-danger" data-appointment-id="<?php echo $appointment['id']; ?>" href="javascript:void(0);">delete appointment <i class="glyphicon glyphicon glyphicon-remove"></i></a>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <a class="btn btn-block btn-sm btn-primary" href="/admin/schedule_day_list.php?date=<?php echo $appointment['date']; ?>"> <i class="glyphicon glyphicon-chevron-left"></i> back to day view</a>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <?php endif; ?>
+
+<?php
+include_once('footer.php');
+?>

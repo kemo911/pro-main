@@ -1,0 +1,21 @@
+<ol class="breadcrumb">
+
+						<li><a href="<?php echo strstr($_SERVER['SCRIPT_NAME'], 'settings') !== false ? 'settings.php' : 'index.php' ?>"><?php _e(strstr($_SERVER['SCRIPT_NAME'], 'settings') !== false ? 'Settings' : 'Control Panel'); ?></a></li>
+
+						<?php if (strstr($_SERVER['SCRIPT_NAME'], 'users.php') !== false): ?>
+
+							<li><a href="index.php#/user-control"><?php _e('Users'); ?></a></li>
+
+							<li class="active"><?php echo !empty($_GET['uid']) ? $_GET['uid'] : -1; ?></li>
+
+						<?php endif ?>
+
+						<?php if (strstr($_SERVER['SCRIPT_NAME'], 'levels.php') !== false): ?>
+
+							<li><a href="index.php#/level-control"><?php _e('Levels'); ?></a></li>
+
+							<li class="active"><?php echo !empty($_GET['lid']) ? $_GET['lid'] : -1; ?></li>
+
+						<?php endif ?>
+
+					</ol>

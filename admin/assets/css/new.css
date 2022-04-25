@@ -1,0 +1,110 @@
+#create-reclamation-division {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 20px;
+    transition: opacity 0.2s ease-in-out;
+    margin: 20px auto;
+    min-height: 100px;
+    position: fixed; /* Sit on top of the page content */
+    width: 100%; /* Full width (cover the whole page) */
+    height: 100%; /* Full height (cover the whole page) */
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0,0,0,0.6); /* Black background with opacity */
+    z-index: 9999; /* Specify a stack order in case you're using a different order for other elements */
+}
+
+.center {
+    margin: auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.hide-division {
+    position: absolute;
+    top: -20px; right: 0;
+    color: #fff;
+    font-size: 30px;
+    width: 40px; height: 40px; border-radius: 20px;
+    text-align: center; vertical-align: middle; line-height: 40px;
+    background-color: #d9534f;
+    transition: all 0.2s ease-in-out;
+}
+.hide-division:hover,.hide-division:active,.hide-division:visited,.hide-division:focus {
+    background-color: #fff;
+    color: #d9534f;
+    text-decoration: none;
+}
+#reclamation_division {
+    position: relative;
+}
+#reclamation_lists {
+    position: absolute;
+    top: 70px; left: 0;
+    padding: 0;
+    list-style: none;
+    column-count: auto;
+    background-color: #4e4e4e;
+    box-shadow: 0 0 3px rgba(0,0,0,0.2);
+    z-index: 10000;
+    max-height: 350px;
+    overflow-y: scroll;
+    width: 100%;
+    box-sizing: border-box;
+}
+#reclamation_lists li {
+    width: 25%;
+    float: left;
+}
+#reclamation_lists li a {
+    display: block;
+    color: #ffffff;
+    padding: 5px;
+    border: 1px solid #1a242f;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+#reclamation_lists li a:hover {
+    background-color: #fff;
+    color: #4e4e4e;
+}
+#reclamation_lists li a span {
+    float: right;
+}
+.or-division {
+    text-align: center;
+    font-size: 200%;
+}
+.pictures {
+    border: 1px solid #eeeeee;
+}
+.pictures ul {
+    list-style: none;
+    margin: 0; padding: 0;
+    display: table;
+}
+.pictures ul li {
+    float: left;
+    padding: 10px;
+    width: 100px;
+    margin-right: 10px;
+    box-sizing: border-box;
+    border: 3px solid transparent;
+}
+.pictures ul li img {
+    display: block;
+    height: 100px;
+}
+.pictures ul li button {
+    display: block;
+    margin-top: 5px;
+}
+
+#estimationPage table a {
+    color: #222222;
+    text-decoration: none;
+}
