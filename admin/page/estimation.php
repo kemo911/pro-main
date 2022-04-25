@@ -236,7 +236,6 @@
                             <ul>
 
                                 <li ng-repeat="photo in estimation.reclamation.photos">
-
                                     <a href="/{{photo.photo_url}}" data-lightbox="image-{{photo.id}}">
                                         <img width="100px" src="/{{photo.photo_url}}">
                                     </a>
@@ -733,7 +732,6 @@
                                         </td>
 
                                         <td>
-
                                             <input type="number" min="0" id="inv_<?php echo $key; ?>_price" class="form-control invoice_price" name="invoice[damage<?php echo $key; ?>][price]">
 
                                         </td>

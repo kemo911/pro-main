@@ -452,8 +452,9 @@ $(document).ready(function() {
         var dotPrice = $('#dot_price').val();
         var dotDesc = $('#dot_desc').val();
         var dotNumber = $('#dot_number').val();
+        var dotPartDotPrice = $('#part_dot_price').val();
         dotInfoHolder[dotNumber] = {
-            "price": dotPrice,
+            "price": parseFloat(dotPrice) +  parseFloat(dotPartDotPrice),
             "description": dotDesc,
             "tech": $('#dot_tech').val(),
         };

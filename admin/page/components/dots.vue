@@ -230,7 +230,9 @@
         if (shared.dotNumber) {
           this.dots[shared.dotNumber] = JSON.parse(JSON.stringify(this.input));
         }
+
         const {damagePrice, backWindowPrice, partPrice} = this.generateAllPricesFromDots(shared);
+
         jQuery('#inv_work_force_price').val(damagePrice.toFixed(2))
         jQuery('#inv_parts_price').val(partPrice.toFixed(2))
         jQuery('#inv_glazier_price').val(backWindowPrice.toFixed(2))

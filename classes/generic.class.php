@@ -17,10 +17,14 @@
 
 date_default_timezone_set('UTC');
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+
 include_once( 'translate.class.php' );
 include_once( 'connect.class.php' );
 include_once ( __DIR__ . '/../admin/classes/DB.php' );
 include_once ( __DIR__ . '/../permission.php' );
+require __DIR__ . '/../vendor/autoload.php';
 
 /** @property PDO $dbh*/
 class Generic extends Connect {
@@ -216,51 +220,83 @@ class Generic extends Connect {
 
 	}
 
-	/**
-	 * Sends HTML emails with optional shortcodes.
-	 *
-	 * @param     string    $to            Receiver of the mail.
-	 * @param     string    $subj          Subject of the email.
-	 * @param     string    $msg           Message to be sent.
-	 * @param     array     $shortcodes    Shortcode values to replace.
-	 * @param     bool      $bcc           Whether to send the email using Bcc: rather than To:
-	 *                                     Useful when sending to multiple recepients.
-	 * @return    bool      Whether the mail was sent or not.
-	 */
-	public function sendEmail($to, $subj, $msg, $shortcodes = '', $bcc = false) {
+    /**
+     * Sends HTML emails with optional shortcodes.
+     *
+     * @param string $to Receiver of the mail.
+     * @param string $subj Subject of the email.
+     * @param string $msg Message to be sent.
+     * @param array $shortcodes Shortcode values to replace.
+     * @param bool $bcc Whether to send the email using Bcc: rather than To:
+     *                                     Useful when sending to multiple recepients.
+     * @return    bool      Whether the mail was sent or not.
+     * @throws \PHPMailer\PHPMailer\Exception
+     */
+	public function sendEmail($to, $subj, $msg, $shortcodes = '', $bcc = false,$files=[],$new_template = false) {
 
-		if ( !empty($shortcodes) && is_array($shortcodes) ) :
+        if ($new_template){
+            $mail = new PHPMailer(true);
 
-			foreach ($shortcodes as $code => $value)
-				$msg = str_replace('{{'.$code.'}}', $value, $msg);
+            try {
+                $mail->isSMTP();
+                $mail->SMTPAuth = true;
+                $mail->Host = 'mail.bosseesg.com';
+                $mail->Port = 587;
+                $mail->Username = '_mainaccount@bosseesg.com';
+                $mail->Password = 'MvCBEkPqu4SdKK9%@#$';
+                $mail->From = address;
+                $mail->setFrom(address);
+                $mail->addReplyTo(address);
+                $mail->Subject = $subj;
+                foreach ($to as $email){
+                    $mail->addAddress($email);
+                }
 
-		endif;
+                $mail->isHTML(true);
+                $mail->Body = $msg;
+                foreach ($files as $file){
+                    echo $file;
+                    $mail->addAttachment($file);
+                }
+                return $mail->send();
+            }catch (Exception $e){
+                echo $e->getMessage();
+                return false;
+            }
+        }else {
+            if ( !empty($shortcodes) && is_array($shortcodes) ) :
 
-		/* Multiple recepients? */
-		if ( is_array( $to ) )
-			$to = implode(', ', $to);
+                foreach ($shortcodes as $code => $value)
+                    $msg = str_replace('{{'.$code.'}}', $value, $msg);
 
-		$headers  = 'MIME-Version: 1.0' . "\r\n";
-		$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
-		$headers .= 'From: ' . address . "\r\n";
+            endif;
 
-		/* BCC address. */
-		if ( $bcc ) {
-			$headers .= 'Bcc: ' . $to . "\r\n";
-			$to = null;
-		}
+            /* Multiple recepients? */
+            if ( is_array( $to ) )
+                $to = implode(', ', $to);
 
-		$headers .= 'Reply-To: ' . address . "\r\n";
-		$headers .= 'Return-Path: ' . address . "\r\n";
+            $headers  = 'MIME-Version: 1.0' . "\r\n";
+            $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-		/*
-		 * If running postfix, need a fifth parameter since Return-Path doesn't always work.
-		 */
-		// $optionalParams = '-r' . address;
-		$optionalParams = '';
 
-		return mail($to, $subj, nl2br(html_entity_decode($msg)), $headers, $optionalParams);
+            /* BCC address. */
+            if ( $bcc ) {
+                $headers .= 'Bcc: ' . $to . "\r\n";
+                $to = null;
+            }
 
+            $headers .= 'Reply-To: ' . address . "\r\n";
+            $headers .= 'Return-Path: ' . address . "\r\n";
+
+
+            /*
+             * If running postfix, need a fifth parameter since Return-Path doesn't always work.
+             */
+            // $optionalParams = '-r' . address;
+            $optionalParams = '';
+
+            return mail($to, $subj, nl2br(html_entity_decode($msg)), $headers, $optionalParams);
+        }
 	}
 
 	/**
@@ -622,14 +658,14 @@ class Generic extends Connect {
 		if( !empty($error) ) :
 
 			// Current headers
-			include_once(cINC . 'header.php');
+			include_once('../header.php');
 
 			// The error itself
 			echo $error;
 
 			// Shall we exit or not?
 			if( $exit ) {
-				include_once(cINC . 'footer.php');
+				include_once('../footer.php');
 				exit();
 			}
 

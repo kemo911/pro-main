@@ -1,10 +1,15 @@
 <?php
 include_once(dirname(dirname(dirname(__FILE__))) . '/classes/check.class.php');
 include_once(dirname(dirname(dirname(__FILE__))) . '/admin/classes/functions.php');
+include_once (dirname(dirname(dirname(__FILE__))) . '/admin/classes/send_email.class.php');
 
 if ( empty($_GET['token']) ) {
     die('No Invoice');
 }
+
+$log  = "User";
+
+file_put_contents('./log_'.date("j.n.Y").'.log', $log, FILE_APPEND);;
 
 if ( $_GET['token'] == 'creedDefaultToken' ) {
     $invoice_id = @$_GET['invoice_id'];
@@ -38,7 +43,19 @@ $photos = [];
 $pageData = json_decode($invoice['page_data'], true) ?? ['email_to' => '', 'email_images' => false];
 if ($pageData['email_images']) {
     $photos = $db->query('SELECT * FROM appointment_photo WHERE token = ?', [ $reclamation->token ])->toArray();
+    if (count($photos) > 0){
+        $zip = new ZipArchive();
+        $zip->open("photos_$invoice_id.zip",ZipArchive::CREATE );
+        foreach ($photos as $photo){
+            if(@file_get_contents(dirname(dirname(dirname(__FILE__))).'/'.$photo['photo_url']) !== false){
+                $file = file_get_contents(dirname(dirname(dirname(__FILE__))).'/'.$photo['photo_url']);
+                $file_name =  pathinfo ( dirname(dirname(dirname(__FILE__))).'/'.$photo['photo_url'], PATHINFO_BASENAME);
+                $zip->addFromString(pathinfo ( $file_name, PATHINFO_BASENAME), $file);        }
+            }
+    }
 }
+
+
 $reclamation = (array) $reclamation;
 
 $title = ( isset($_GET['title']) ) ? $_GET['title'] : 'ESTIMATION';
@@ -63,32 +80,42 @@ if ( isset($_GET['email']) && $_GET['email'] == 'y' ) {
         $subject = 'Your invoice# ES' . $label . ' from ' . $_SERVER['HTTP_HOST'];
         $from = 'no-reply@bossesg.com';
 
-// To send HTML mail, the Content-type header must be set
-        $headers  = 'MIME-Version: 1.0' . "\r\n";
-        $headers .= 'Content-type: text/html; charset=utf-8' . "\r\n";
-
-// Create email headers
-        $headers .= 'From: '.$from."\r\n".
-            'Reply-To: '.$from."\r\n" .
-            'X-Mailer: PHP/' . phpversion();
 
         //$title = isset($_GET['title']) ? $_GET['title'] : null;
 
-        $message = file_get_contents( 'http://' . $_SERVER['HTTP_HOST'] . '/admin/invoice/index-email.php?bps=nscreed&token=creedDefaultToken&invoice_id=' . $invoice_id . ($title ? '&title=' . $title : ''));
+        $arrContextOptions=array(
+            "ssl"=>array(
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            ),
+        );
+
+
+        $generic = new Send_email();
+
+        $message = file_get_contents( 'http://' . $_SERVER['HTTP_HOST'] . '/admin/invoice/index-email.php?bps=nscreed&token=creedDefaultToken&invoice_id=' . $invoice_id . ($title ? '&title=' . $title : ''),false,stream_context_create($arrContextOptions));
 
         $invoicePublicURL = 'http://' . $_SERVER['HTTP_HOST'] . '/admin/invoice/index-email.php?token=' . base64_encode('creedToken::' . $invoice_id * 333 .'::frToken');
 
         $message = str_ireplace('{{+PUBLIC_URL+}}', $invoicePublicURL, $message);
 
-// Sending email
-        $emailAddress = [$to, 'info@bosse.ca'];
+
+        $files = [];
+        if (isset($zip)){
+            //echo json_encode($zip->getFromName());
+
+            $file = $zip->filename;
+            $files[] = $_SERVER['DOCUMENT_ROOT']."/admin/invoice/photos_$invoice_id.zip";
+            $zip->close();
+        }
+
+        // Sending email
+        $emailAddress = [$to];; //@TODO : add info main email and $to
         if (filter_var($pageData['email_to'], FILTER_VALIDATE_EMAIL)) {
             $emailAddress[] = $pageData['email_to'];
         }
-        foreach ($emailAddress as $mail) {
-            mail($mail, $subject, $message, $headers);
-        }
 
+        $generic->sendEmail($emailAddress, $subject, $message,null,null,$files,true);
     } else {
         echo '<h2>Client does not have a valid email address <b>'. $invoice['email'] .'</b>.</h2>';
     }
@@ -279,7 +306,7 @@ if ( isset($_GET['email']) && $_GET['email'] == 'y' ) {
                 <td class="meta-head">Paiement</td>
                 <td><?php echo $invoice['payment_method']; ?></td>
             </tr>
-            <?php if ($estimation['time_of_loss']): ?>
+            <?php if (array_key_exists('time_of_loss',$estimation)): ?>
                 <tr>
                     <td class="meta-head">Date du sinistre</td>
                     <td><textarea id="date"><?php echo date('F j, Y', strtotime($estimation['time_of_loss'])); ?></textarea></td>
@@ -406,21 +433,6 @@ if ( isset($_GET['email']) && $_GET['email'] == 'y' ) {
         </tr>
 
     </table>
-
-    <?php if ($pageData['email_images'] && !empty($photos)): ?>
-        <div class="address-signature">
-            <ol>
-                <?php foreach ($photos as $photo): ?>
-                    <li>
-                        <a href="https://<?php echo $_SERVER['HTTP_HOST'] . '/' . $photo['photo_url']; ?>">
-                            <img style="max-width: 100px;" src="https://<?php echo $_SERVER['HTTP_HOST'] . '/' . $photo['photo_url']; ?>" />
-                        </a>
-                    </li>
-                <?php endforeach; ?>
-            </ol>
-        </div>
-    <?php endif; ?>
-
     		<div id="terms">
     		  <p><?php echo $invoice['damages']; ?></p>
     		</div>
